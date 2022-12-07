@@ -3,9 +3,11 @@
     <div class="margin">
       <div class="logo" ref="logo">
         <h1>
-          <router-link to="/" 
+          <router-link v-if="$i18n.locale != 'en'" :to="logoPath" 
             ><img src="~@/assets/images/header/header-logo.jpg" alt=""
           /></router-link>
+          <img v-else src="~@/assets/images/header/header-logo.jpg" alt=""
+          />
         </h1>
       </div>
       <nav>
@@ -17,15 +19,19 @@
           <a href="https://www.chiline.com.cn">{{ $t("lang.electronics") }}</a>
         </li> -->
           <li>
-            <a href="javascript:void(0)" @click="linkTo">{{
+            <!-- <router-link v-if="$i18n.locale == 'en'" to="brand#xuanyin">{{
+              $t("lang.electronics")
+            }}</router-link> -->
+            <a href="javascript:void(0)" @click="linkTo('electronics')">{{
               $t("lang.electronics")
             }}</a>
           </li>
           <li>
-            <!-- <a href="http://www.easydr.com.tw/">{{ $t("lang.medical") }}</a> -->
-            <a href="http://www.easydr.com.tw/">{{ medical }}</a>
+            <!-- <router-link v-if="$i18n.locale == 'en'" to="brand#family">{{ $t("lang.medical") }}</router-link> -->
+            <a href="javascript:void(0)" @click="linkTo('medical')">{{ $t("lang.medical") }}</a>
+            <!-- <a href="http://www.easydr.com.tw/">{{ medical }}</a> -->
           </li>
-          <li class="invention" @touchstart="show">
+          <li v-if="$i18n.locale != 'en'" class="invention" @touchstart="show">
             <a href="javascript:void(0)">{{ $t("lang.invention") }}</a>
             <div class="dropdown" ref="dropdown">
               <p>
@@ -49,16 +55,20 @@
         ><span>|</span
         ><a
           href="javascript:void(0)"
-          :class="{ active: !isSimActive }"
-          @mouseover="isSimActive = false"
-          @mouseleave="isSimActive = $i18n.locale == 'zh_CN'"
+          :class="{ active: isTraActive }"
+          @mouseover="isTraActive = true"
+          @mouseleave="isTraActive = $i18n.locale == 'zh_TW'"
           @click="changeLang('zh_TW')"
           >{{ $t("lang.traditional") }}</a
+        ><span>|</span
+        ><a
+          href="javascript:void(0)"
+          :class="{ active: isEnActive }"
+          @mouseover="isEnActive = true"
+          @mouseleave="isEnActive = $i18n.locale == 'en'"
+          @click="changeLang('en')"
+          >{{ $t("lang.en") }}</a
         >
-        <!-- <span>/</span
-      ><a a href="javascript:void(0)" class="traditional">{{
-        $t("lang.eng")
-      }}</a> -->
       </div>
     </div>
   </div>
@@ -74,7 +84,10 @@ export default {
   // },
   data() {
     return {
+      logoPath: '/',
       isSimActive: null,
+      isTraActive: null,
+      isEnActive: null,
     };
   },
   // beforeRouteLeave (to, from, next) {
@@ -85,6 +98,11 @@ export default {
   // },
   created() {
     this.isSimActive = this.$i18n.locale == "zh_CN" ? true : false;
+    this.isTraActive = this.$i18n.locale == "zh_TW" ? true : false;
+    this.isEnActive = this.$i18n.locale == "en" ? true : false;
+    // this.logoPath = this.$i18n.locale == "zh_CN" ? '/cn' : '/';
+    // this.logoPath = this.$i18n.locale == "zh_TW" ? '/tw' : '/';
+    // this.logoPath = this.$i18n.locale == "zh_CN" ? '/cn' : '/';
   },
   computed: {
     medical: function () {
@@ -94,21 +112,97 @@ export default {
   methods: {
     changeLang(type) {
       this.$i18n.locale = type;
+
+      if (type == 'zh_TW') {
+        this.isTraActive = true
+        this.isSimActive = false
+        this.isEnActive = false
+      }
+      if (type == 'zh_CN') {
+        this.isTraActive = false
+        this.isSimActive = true
+        this.isEnActive = false
+      }
+      if (type == 'en') {
+        this.isTraActive = false
+        this.isSimActive = false
+        this.isEnActive = true
+      }
+
       // alert(this.$route.path)
       if (this.$route.path.match("/cn") && type == 'zh_TW') {
         this.$router.push('/tw')
       }
+      if (this.$route.path.match("/cn") && type == 'en') {
+        this.$router.push('/en')
+      }
       if (this.$route.path.match("/tw") && type == 'zh_CN') {
         this.$router.push('/cn')
       }
+      if (this.$route.path.match("/tw") && type == 'en') {
+        this.$router.push('/en')
+      }
+      if (this.$route.path.match("/en") && type == 'zh_CN') {
+        this.$router.push('/cn')
+      }
+      if (this.$route.path.match("/en") && type == 'zh_TW') {
+        this.$router.push('/tw')
+      }
+
+      if ((this.$route.path.match("/patents") || this.$route.path.match("/honor")) && type == 'en') {
+        this.$router.push('/en')
+      }
+
+      if (this.$route.path.match("")  && type == 'en') {
+        this.$router.push('/en')
+      }
+
+      // if (type == 'zh_TW') {
+      //   this.$router.push('/tw')
+      //   this.isTraActive = true
+      //   this.isSimActive = false
+      //   this.isEnActive = false
+      // }
+      // if (type == 'zh_CN') {
+      //   this.$router.push('/cn')
+      //   this.isTraActive = false
+      //   this.isSimActive = true
+      //   this.isEnActive = false
+      // }
+      // if (type == 'en') {
+      //   this.$router.push('/en')
+      //   this.isTraActive = false
+      //   this.isSimActive = false
+      //   this.isEnActive = true
+      // }
       localStorage.setItem("lang", type);
     },
-    linkTo() {
-      if (this.$i18n.locale == "zh_TW") {
-        window.location = "https://www.chiline.com.tw/";
-      } else {
-        window.location = "https://www.chiline.com.cn";
+    linkTo(cate) {
+      if (cate == 'electronics') {
+        if (this.$i18n.locale == "zh_TW") {
+          window.location = "https://www.chiline.com.tw/";
+        }
+        if (this.$i18n.locale == "zh_CN") {
+          window.location = "https://www.chiline.com.cn/";
+        }
+        if (this.$i18n.locale == "en") {
+          // window.location = "/brand#xuanyin";
+          window.document.querySelector("#xuanyin").scrollIntoView(true)
+        }
       }
+      if (cate == 'medical') {
+        if (this.$i18n.locale == "zh_TW") {
+          window.location = "https://www.easydr.com.tw/";
+        }
+        if (this.$i18n.locale == "zh_CN") {
+          window.location = "https://www.easydr.com.tw/";
+        }
+        if (this.$i18n.locale == "en") {
+          // window.location = "/brand#xuanyin";
+          window.document.querySelector("#family").scrollIntoView(true)
+        }
+      }
+
     },
     // append(){
     //   this.$router.append(path)
@@ -130,7 +224,7 @@ export default {
   display: flex;
   align-items: center;
   .margin {
-    width: 15rem;
+    width: 16rem;
     margin: 0 auto;
     display: flex;
     // justify-content: space-between;
@@ -231,7 +325,7 @@ export default {
       }
     }
     .font {
-      width: 6%;
+      width: 10%;
       color: #fff;
       font-size: 0.22rem;
       a {

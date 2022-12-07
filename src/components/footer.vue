@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <div class="footer-top" ref="footer">
-      <div class="margin">
+      <div class="margin" :class="$i18n.locale == 'en' ? 'en-margin' : ''">
         <div class="left footer-top-item">
           <div class="left-container">
-            <div class="logo">
-              <h3>{{ $t("lang.footLeftCata") }}</h3>
+            <div class="logo" :class="$i18n.locale == 'en' ? 'en-logo' : ''">
+              <h3 >{{ $t("lang.footLeftCata") }}</h3>
               <a :href="[this.$i18n.locale == 'zh_CN'?'https://www.chiline.com.cn':'https://www.chiline.com.tw']"><img src="@/assets/images/footer/left/xuanyin.png" alt="" /></a>
               <!-- <img src="@/assets/images/footer/left/xuanyin.png" alt="" /> -->
             </div>
@@ -56,7 +56,7 @@
         </div>
         <div class="right footer-top-item">
           <div class="right-container">
-            <div class="logo">
+            <div class="logo" :class="$i18n.locale == 'en' ? 'en-logo' : ''">
               <h3>{{ $t("lang.footRightCata") }}</h3>
               <a :href="[this.$i18n.locale == 'zh_CN'?'https://www.easydr.com.tw':'https://www.easydr.com.tw']"><img src="@/assets/images/footer/right/quanjiabao.png" alt="" /></a>
               <a :href="[this.$i18n.locale == 'zh_CN'?'https://www.easydr.com.tw':'https://www.easydr.com.tw']"><img src="@/assets/images/footer/right/simai.png" alt="" /></a>
@@ -144,6 +144,13 @@ export default {
           service: "服務時間 : 週一至週五 09:00-17:00",
           
         },
+        {
+          contact: "Contact us",
+          email: "Email：service@chilne.com.tw",
+          tel: "Tel: 0800-866-698",
+          service: "Service available:  9:00 ~ 17:00  Mon. - Fri.",
+          
+        },
       ],
       rightContactText: {},
       rightContactTextList: [
@@ -162,7 +169,17 @@ export default {
           // },
           email: "電子郵件 : service@easydr.com.tw",
           tel: "免付費電話 : 0800-310-168",
-          service: "服務時間 : 週一至週五 09:00-17:00",
+          service: "服務時間 :  9:00 ~ 17:00  Mon. - Fri.",
+        },
+        {
+          contact: "Contact us",
+          // web: {
+          //   name: "官方網站",
+          //   url: "https://www.easydr.com.tw",
+          // },
+          email: "Email: service@easydr.com.tw",
+          tel: "Tel: 0800-310-168",
+          service: "Service available:  9:00 ~ 17:00  Mon. - Fri.",
         },
       ],
       leftTabBar: [],
@@ -263,6 +280,21 @@ export default {
         this.rightTabBar = this.rightTabBarList;
         this.rightContactText = this.rightContactTextList[1];
       }
+      if (this.$i18n.locale == "en") {
+        //左边
+        this.leftTabBarList.forEach((item) => {
+          let obj = {
+            src: item.src[1],
+            activeSrc: item.activeSrc[1],
+            url: item.url,
+          };
+          this.leftTabBar.push(obj);
+        });
+        this.leftContactText = this.leftContactTextList[2];
+        //右边
+        this.rightTabBar = this.rightTabBarList;
+        this.rightContactText = this.rightContactTextList[2];
+      }
     },
   },
 };
@@ -300,6 +332,12 @@ export default {
               height: 0.25rem;
               width: auto;
               margin-bottom: 0.14rem;
+            }
+          }
+          .en-logo{
+            margin-right: .2rem;
+            h3{
+              font-size: .26rem;
             }
           }
           .contact {
@@ -377,6 +415,12 @@ export default {
               margin-bottom: 0.14rem;
             }
           }
+          .en-logo{
+            margin-right: .2rem;
+            h3{
+              font-size: .26rem;
+            }
+          }
           .contact {
             // width: 50.42%;
             font-size: 0.22rem;
@@ -417,6 +461,9 @@ export default {
           }
         }
       }
+    }
+    .en-margin{
+      width: 16rem;
     }
   }
   .footer-bottom {
