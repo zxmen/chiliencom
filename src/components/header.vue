@@ -45,7 +45,8 @@
         </ul>
       </nav>
       <div class="font">
-        <a
+        <div class="pc" v-if="!isMobile">
+          <a
           href="javascript:void(0)"
           :class="{ active: isSimActive }"
           @mouseover="isSimActive = true"
@@ -69,7 +70,47 @@
           @click="changeLang('en')"
           >{{ $t("lang.en") }}</a
         >
+        </div>
+        <div class="mobile" v-else>
+          <div class="dropdown" :class="{ active: showDropdown }">
+            <div class="selected-item" @click="showDropdown = !showDropdown">
+              {{ selectedLanguage }}
+              <i class="iconfont icon-xiala"></i>
+            </div>
+            <ul v-show="showDropdown">
+              <li v-for="language in languages" :key="language.type" :class="{ active: selectedLanguage === language }" @click="changeLang(language.type)">
+                {{ language.text }}
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
+      <!-- <div class="font">
+          <a
+          href="javascript:void(0)"
+          :class="{ active: isSimActive }"
+          @mouseover="isSimActive = true"
+          @mouseleave="isSimActive = $i18n.locale == 'zh_CN'"
+          @click="changeLang('zh_CN')"
+          >{{ $t("lang.simplify") }}</a
+        ><span>|</span
+        ><a
+          href="javascript:void(0)"
+          :class="{ active: isTraActive }"
+          @mouseover="isTraActive = true"
+          @mouseleave="isTraActive = $i18n.locale == 'zh_TW'"
+          @click="changeLang('zh_TW')"
+          >{{ $t("lang.traditional") }}</a
+        ><span>|</span
+        ><a
+          href="javascript:void(0)"
+          :class="{ active: isEnActive }"
+          @mouseover="isEnActive = true"
+          @mouseleave="isEnActive = $i18n.locale == 'en'"
+          @click="changeLang('en')"
+          >{{ $t("lang.en") }}</a
+        >
+      </div> -->
     </div>
   </div>
 </template>
@@ -88,6 +129,10 @@ export default {
       isSimActive: null,
       isTraActive: null,
       isEnActive: null,
+      isMobile: false,
+      showDropdown: false,
+      selectedLanguage: null,
+      languages: [{text: this.$t("lang.simplify"),type: 'zh_CN'}, {text: this.$t("lang.traditional"),type: 'zh_TW'}, {text: this.$t("lang.en"),type: 'en'}],
     };
   },
   // beforeRouteLeave (to, from, next) {
@@ -100,9 +145,13 @@ export default {
     this.isSimActive = this.$i18n.locale == "zh_CN" ? true : false;
     this.isTraActive = this.$i18n.locale == "zh_TW" ? true : false;
     this.isEnActive = this.$i18n.locale == "en" ? true : false;
+    this.selectedLanguage = this.$i18n.locale == "zh_CN" ? this.$t("lang.simplify") : this.$i18n.locale == "zh_TW" ? this.$t("lang.traditional") : this.$t("lang.en");
     // this.logoPath = this.$i18n.locale == "zh_CN" ? '/cn' : '/';
     // this.logoPath = this.$i18n.locale == "zh_TW" ? '/tw' : '/';
     // this.logoPath = this.$i18n.locale == "zh_CN" ? '/cn' : '/';
+  },
+  mounted(){
+    this.isMobile = window.innerWidth < 768;
   },
   computed: {
     medical: function () {
@@ -112,7 +161,8 @@ export default {
   methods: {
     changeLang(type) {
       this.$i18n.locale = type;
-
+      this.selectedLanguage = this.$i18n.locale == "zh_CN" ? this.$t("lang.simplify") : this.$i18n.locale == "zh_TW" ? this.$t("lang.traditional") : this.$t("lang.en");
+      this.showDropdown = false;
       if (type == 'zh_TW') {
         this.isTraActive = true
         this.isSimActive = false
@@ -156,25 +206,6 @@ export default {
       if (this.$route.path.match("")  && type == 'en') {
         this.$router.push('/en')
       }
-
-      // if (type == 'zh_TW') {
-      //   this.$router.push('/tw')
-      //   this.isTraActive = true
-      //   this.isSimActive = false
-      //   this.isEnActive = false
-      // }
-      // if (type == 'zh_CN') {
-      //   this.$router.push('/cn')
-      //   this.isTraActive = false
-      //   this.isSimActive = true
-      //   this.isEnActive = false
-      // }
-      // if (type == 'en') {
-      //   this.$router.push('/en')
-      //   this.isTraActive = false
-      //   this.isSimActive = false
-      //   this.isEnActive = true
-      // }
       localStorage.setItem("lang", type);
     },
     linkTo(cate) {
@@ -195,7 +226,7 @@ export default {
           window.location = "https://www.easydr.com.tw/";
         }
         if (this.$i18n.locale == "zh_CN") {
-          window.location = "https://www.easydr.com.tw/";
+          window.location = "https://www.chilinemd.com.cn/";
         }
         if (this.$i18n.locale == "en") {
           // window.location = "/brand#xuanyin";
@@ -214,6 +245,16 @@ export default {
       },2000)
     }
   },
+  //使用watch监听this.$i18n.locale的变化
+  // watch: {
+  //   $i18n: {
+  //     handler(val) {
+  //       // console.log(val.locale)
+  //       this.selectedLanguage = val.locale == "zh_CN" ? this.$t("lang.simplify") : val.locale == "zh_TW" ? this.$t("lang.traditional") : this.$t("lang.en");
+  //     },
+  //     deep: true
+  //   }
+  // }
 };
 </script>
 
@@ -324,18 +365,74 @@ export default {
         }
       }
     }
+    // .font{
+    //   width: 10%;
+    //   color: #fff;
+    //   font-size: 0.22rem;
+    //   a {
+    //     color: rgba(255, 255, 255, 0.4);
+    //   }
+    //   .active {
+    //     color: rgba(255, 255, 255, 1);
+    //   }
+    //   span {
+    //     margin: 0 0.14rem;
+    //   }
+    // }
     .font {
       width: 10%;
-      color: #fff;
-      font-size: 0.22rem;
-      a {
-        color: rgba(255, 255, 255, 0.4);
+      .pc{
+        width: 100%;
+        color: #fff;
+        font-size: 0.22rem;
+        a {
+          color: rgba(255, 255, 255, 0.4);
+        }
+        .active {
+          color: rgba(255, 255, 255, 1);
+        }
+        span {
+          margin: 0 0.14rem;
+        }
       }
-      .active {
-        color: rgba(255, 255, 255, 1);
-      }
-      span {
-        margin: 0 0.14rem;
+      .mobile{
+        /* 下拉菜单样式 */
+        .dropdown {
+          position: relative;
+          .selected-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;  
+            i {
+              position: relative;
+              right: 0;
+              font-size: 0.5rem;
+            }
+          }
+          ul {
+            position: absolute;
+            width: 100%;
+            top: 1.4rem;
+            left: 0;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            li {
+              padding: 5px;
+              cursor: pointer;
+            }
+            li.active {
+              background-color: #ccc;
+            }
+          }
+        }
       }
     }
   }
